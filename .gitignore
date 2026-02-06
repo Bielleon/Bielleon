@@ -1,0 +1,9 @@
+# Backups de workflows n8n (podem conter dados sensíveis)
+n8n-skill/backups/*.json
+
+# Temp files
+n8n-skill/temp/
+
+# Environment files
+.env
+.env.local

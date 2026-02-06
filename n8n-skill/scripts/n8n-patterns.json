@@ -1,0 +1,147 @@
+{
+  "known_issues": {
+    "critical": [
+      {
+        "id": "NO_ERROR_HANDLER",
+        "title": "Node sem tratamento de erro",
+        "description": "Nodes de API/HTTP sem configuração 'onError' ou 'continueOnFail'",
+        "applies_to": ["HttpRequest", "Function", "Code", "Webhook"],
+        "fix": "Adicionar 'continueOnFail: true' ou conectar error output"
+      },
+      {
+        "id": "HARDCODED_CREDENTIALS",
+        "title": "Credenciais hardcoded",
+        "description": "API keys ou tokens diretamente no código dos nodes",
+        "applies_to": ["Code", "Function", "HttpRequest"],
+        "fix": "Migrar para sistema de credenciais do n8n"
+      },
+      {
+        "id": "NO_ERROR_WORKFLOW",
+        "title": "Workflow sem Error Workflow configurado",
+        "description": "Workflow não tem error workflow conectado para alertas",
+        "fix": "Configurar Error Workflow que envia alerta via WhatsApp"
+      },
+      {
+        "id": "INFINITE_LOOP_RISK",
+        "title": "Risco de loop infinito",
+        "description": "Webhook que pode triggar a si mesmo ou criar ciclos",
+        "fix": "Adicionar condição de parada ou deduplicação"
+      }
+    ],
+    "high": [
+      {
+        "id": "NO_RETRY",
+        "title": "API sem retry configurado",
+        "description": "Chamadas a APIs externas sem retry em caso de falha temporária",
+        "applies_to": ["HttpRequest", "OpenAi", "Telegram"],
+        "fix": "Configurar retry com backoff exponencial"
+      },
+      {
+        "id": "NO_RATE_LIMIT",
+        "title": "Sem controle de rate limit",
+        "description": "Múltiplas chamadas a API sem delay entre elas",
+        "applies_to": ["SplitInBatches", "HttpRequest"],
+        "fix": "Adicionar Wait node ou configurar batch size adequado"
+      },
+      {
+        "id": "LARGE_PAYLOAD",
+        "title": "Payload excessivo entre nodes",
+        "description": "Dados desnecessários sendo passados entre nodes",
+        "fix": "Usar 'Set' node para filtrar apenas campos necessários"
+      },
+      {
+        "id": "NO_WEBHOOK_AUTH",
+        "title": "Webhook sem autenticação",
+        "description": "Webhook exposto publicamente sem validação",
+        "fix": "Adicionar Header Auth ou validação de IP/token"
+      }
+    ],
+    "medium": [
+      {
+        "id": "GENERIC_NODE_NAME",
+        "title": "Nome genérico de node",
+        "description": "Nodes com nomes padrão como 'HTTP Request', 'IF', 'Code'",
+        "fix": "Renomear com descrição da função (ex: 'Buscar vídeo Heygen')"
+      },
+      {
+        "id": "NO_STICKY_NOTES",
+        "title": "Sem documentação visual",
+        "description": "Workflow complexo sem sticky notes explicativas",
+        "fix": "Adicionar sticky notes nas seções principais"
+      },
+      {
+        "id": "REDUNDANT_API_CALLS",
+        "title": "Chamadas redundantes de API",
+        "description": "Mesma API sendo chamada múltiplas vezes com mesmos parâmetros",
+        "fix": "Cachear resultado ou reorganizar fluxo"
+      },
+      {
+        "id": "SUBWORKFLOW_CANDIDATE",
+        "title": "Candidato a sub-workflow",
+        "description": "Lógica repetida que poderia ser extraída para sub-workflow",
+        "fix": "Criar sub-workflow reutilizável"
+      },
+      {
+        "id": "WASTEFUL_AI_TOKENS",
+        "title": "Desperdício de tokens de IA",
+        "description": "Prompts não otimizados, dados desnecessários enviados para LLM",
+        "fix": "Otimizar prompts, filtrar dados antes de enviar para IA"
+      }
+    ],
+    "low": [
+      {
+        "id": "NO_TAGS",
+        "title": "Workflow sem tags",
+        "description": "Workflow não categorizado com tags",
+        "fix": "Adicionar tags relevantes (ex: 'conteúdo', 'IA', 'social media')"
+      },
+      {
+        "id": "OUTDATED_NODES",
+        "title": "Nodes com versão antiga",
+        "description": "Existem versões mais recentes dos nodes utilizados",
+        "fix": "Atualizar para versão mais recente do node"
+      },
+      {
+        "id": "MISSING_DESCRIPTION",
+        "title": "Workflow sem descrição",
+        "description": "Campo de descrição do workflow está vazio",
+        "fix": "Adicionar descrição do propósito do workflow"
+      }
+    ]
+  },
+  "ai_specific_checks": {
+    "openai": {
+      "check_model": "Verificar se usa modelo mais custo-efetivo para a tarefa",
+      "check_temperature": "Temperature muito alta para tarefas estruturadas",
+      "check_max_tokens": "max_tokens não definido pode gerar custos excessivos",
+      "check_system_prompt": "System prompt ausente ou genérico demais"
+    },
+    "claude": {
+      "check_model": "Verificar se usa Haiku quando Opus/Sonnet não é necessário",
+      "check_max_tokens": "Definir max_tokens adequado para a tarefa"
+    },
+    "heygen": {
+      "check_video_length": "Vídeos longos = custos altos. Verificar se duração é necessária",
+      "check_avatar": "Verificar se avatar/voice é configurado corretamente"
+    },
+    "creatomate": {
+      "check_template": "Verificar se template está otimizado",
+      "check_render_size": "Resolução adequada para o destino (social media)"
+    }
+  },
+  "content_creation_patterns": {
+    "recommended_flow": [
+      "Trigger -> Validação de entrada -> Geração de conteúdo (IA) -> Revisão/Formatação -> Criação de mídia -> Distribuição -> Notificação",
+      "Sempre ter fallback entre IAs: Claude -> GPT -> Gemini",
+      "Salvar rascunhos intermediários no Google Drive",
+      "Notificar via Telegram/WhatsApp em cada etapa crítica"
+    ],
+    "anti_patterns": [
+      "Gerar conteúdo sem validar input primeiro",
+      "Não salvar resultado intermediário (se falhar, perde tudo)",
+      "Chamar múltiplas IAs quando uma seria suficiente",
+      "Não ter preview/aprovação humana antes de publicar",
+      "Usar modelo caro (GPT-4/Opus) para tarefas simples"
+    ]
+  }
+}
